@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KoperasiAI — Asisten Cerdas Koperasi Indonesia</title>
+    <meta name="description" content="Asisten AI untuk koperasi simpan pinjam Indonesia. Simulasi pinjaman, info produk, SHU, dan edukasi anggota via chat. Powered by Gemini API.">
+    <meta property="og:title" content="KoperasiAI — Asisten Cerdas Koperasi Indonesia">
+    <meta property="og:description" content="Chatbot AI untuk koperasi simpan pinjam. Tanya simpanan, simulasi pinjaman, cek SHU — semua lewat chat.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://rafirarangga.github.io/koperasi-ai/">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f8fafc; color: #1e293b; line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ── NAVBAR ── */
+        .navbar {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+            background: rgba(255,255,255,0.72);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(15,118,110,0.08);
+            padding: 0.8rem 2rem;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .nav-brand {
+            font-size: 1.25rem; font-weight: 800; letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #0d9488, #047857);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+        .nav-links { display: flex; gap: 2rem; align-items: center; }
+        .nav-link { color: #475569; font-size: 0.85rem; font-weight: 500; text-decoration: none; transition: color 0.2s; }
+        .nav-link:hover { color: #0d9488; }
+        .nav-cta {
+            background: linear-gradient(135deg, #0d9488, #047857);
+            color: #fff; padding: 0.5rem 1.2rem; border-radius: 10px;
+            font-size: 0.85rem; font-weight: 600; text-decoration: none;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .nav-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(13,148,136,0.25); }
+
+        /* ── HERO ── */
+        .hero {
+            padding: 8rem 2rem 5rem; text-align: center;
+            background: linear-gradient(180deg, #f0fdf4 0%, #f8fafc 40%, #ffffff 100%);
+            position: relative; overflow: hidden;
+        }
+        .hero::before {
+            content: ''; position: absolute; top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: radial-gradient(circle at 30% 20%, rgba(13,148,136,0.04) 0%, transparent 50%),
+                        radial-gradient(circle at 70% 60%, rgba(5,150,105,0.03) 0%, transparent 50%);
+            pointer-events: none;
+        }
+        .hero-badge {
+            display: inline-block; background: rgba(13,148,136,0.08);
+            color: #0d9488; padding: 0.4rem 1.2rem; border-radius: 100px;
+            font-size: 0.8rem; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 1.5rem;
+            border: 1px solid rgba(13,148,136,0.12); position: relative;
+        }
+        .hero h1 {
+            font-size: clamp(2.5rem, 6vw, 4rem); font-weight: 900; letter-spacing: -2px;
+            background: linear-gradient(135deg, #0f766e 0%, #059669 50%, #047857 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem; position: relative; line-height: 1.1;
+        }
+        .hero p {
+            font-size: 1.2rem; color: #64748b; max-width: 600px;
+            margin: 0 auto 2rem; position: relative; line-height: 1.7;
+        }
+        .hero-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; position: relative; }
+        .btn-primary {
+            background: linear-gradient(135deg, #0d9488, #047857);
+            color: #fff; padding: 0.85rem 2rem; border-radius: 14px;
+            font-size: 1rem; font-weight: 700; text-decoration: none;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 20px rgba(13,148,136,0.2);
+        }
+        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 12px 35px rgba(13,148,136,0.3); }
+        .btn-secondary {
+            background: #fff; color: #0f766e; padding: 0.85rem 2rem; border-radius: 14px;
+            font-size: 1rem; font-weight: 700; text-decoration: none;
+            border: 1.5px solid #e2e8f0; transition: all 0.2s;
+        }
+        .btn-secondary:hover { border-color: #5eead4; box-shadow: 0 4px 20px rgba(13,148,136,0.08); }
+        .hero-stats {
+            display: flex; justify-content: center; gap: 3rem; margin-top: 3.5rem;
+            flex-wrap: wrap; position: relative;
+        }
+        .hero-stat { text-align: center; }
+        .hero-stat-value { font-size: 1.8rem; font-weight: 800; color: #0f766e; }
+        .hero-stat-label { font-size: 0.78rem; color: #94a3b8; margin-top: 0.2rem; }
+
+        /* ── SECTIONS ── */
+        section { padding: 5rem 2rem; }
+        .section-label {
+            text-align: center; font-size: 0.8rem; font-weight: 700; letter-spacing: 1px;
+            color: #0d9488; text-transform: uppercase; margin-bottom: 0.5rem;
+        }
+        .section-title {
+            text-align: center; font-size: clamp(1.8rem, 4vw, 2.5rem); font-weight: 800;
+            letter-spacing: -1px; color: #0f172a; margin-bottom: 1rem;
+        }
+        .section-subtitle {
+            text-align: center; font-size: 1.05rem; color: #64748b;
+            max-width: 560px; margin: 0 auto 3rem;
+        }
+
+        /* ── FEATURES ── */
+        #features { background: #fff; }
+        .features-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.5rem; max-width: 1100px; margin: 0 auto;
+        }
+        .feature-card {
+            background: #fff; border: 1px solid #e2e8f0; border-radius: 20px;
+            padding: 2rem; transition: all 0.3s ease;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+        }
+        .feature-card:hover {
+            transform: translateY(-6px); box-shadow: 0 20px 50px rgba(13,148,136,0.1);
+            border-color: #5eead4;
+        }
+        .feature-icon { font-size: 2.5rem; margin-bottom: 1rem; }
+        .feature-card h3 { font-weight: 700; font-size: 1.05rem; color: #0f172a; margin-bottom: 0.5rem; }
+        .feature-card p { font-size: 0.88rem; color: #94a3b8; line-height: 1.6; }
+
+        /* ── HOW IT WORKS ── */
+        #how { background: #f8fafc; }
+        .steps {
+            max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; gap: 1.5rem;
+        }
+        .step {
+            display: flex; gap: 1.5rem; align-items: flex-start;
+            background: #fff; border: 1px solid #e2e8f0; border-radius: 16px;
+            padding: 1.5rem 2rem; transition: all 0.2s;
+        }
+        .step:hover { border-color: #5eead4; box-shadow: 0 8px 30px rgba(13,148,136,0.06); }
+        .step-num {
+            width: 44px; height: 44px; border-radius: 12px;
+            background: linear-gradient(135deg, #0d9488, #047857);
+            color: #fff; font-weight: 800; font-size: 1.1rem;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .step-content h4 { font-weight: 700; color: #0f172a; margin-bottom: 0.2rem; }
+        .step-content p { font-size: 0.88rem; color: #64748b; }
+
+        /* ── TECH STACK ── */
+        #tech { background: #fff; }
+        .tech-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem; max-width: 900px; margin: 0 auto;
+        }
+        .tech-item {
+            background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px;
+            padding: 1.2rem; text-align: center; transition: all 0.2s;
+        }
+        .tech-item:hover { border-color: #5eead4; background: #f0fdfa; }
+        .tech-item .icon { font-size: 1.8rem; margin-bottom: 0.5rem; }
+        .tech-item .name { font-weight: 700; font-size: 0.9rem; color: #0f172a; }
+        .tech-item .role { font-size: 0.75rem; color: #94a3b8; margin-top: 0.2rem; }
+
+        /* ── DEMO ── */
+        #demo { background: linear-gradient(180deg, #f0fdf4, #f8fafc); }
+        .demo-card {
+            max-width: 800px; margin: 0 auto; background: #fff;
+            border: 1px solid #e2e8f0; border-radius: 24px; overflow: hidden;
+            box-shadow: 0 4px 30px rgba(0,0,0,0.04);
+        }
+        .demo-header {
+            background: #f8fafc; padding: 0.8rem 1.5rem; border-bottom: 1px solid #e2e8f0;
+            display: flex; align-items: center; gap: 0.5rem;
+        }
+        .demo-dot { width: 10px; height: 10px; border-radius: 50%; }
+        .demo-dot.red { background: #ef4444; } .demo-dot.yellow { background: #f59e0b; } .demo-dot.green { background: #22c55e; }
+        .demo-body { padding: 2rem; }
+        .demo-body pre {
+            background: #1e293b; color: #e2e8f0; padding: 1.5rem; border-radius: 12px;
+            font-family: 'JetBrains Mono', monospace; font-size: 0.85rem;
+            overflow-x: auto; line-height: 1.7;
+        }
+        .demo-body pre .prompt { color: #5eead4; }
+        .demo-body pre .response { color: #94a3b8; }
+
+        /* ── CTA ── */
+        #cta {
+            text-align: center; padding: 6rem 2rem;
+            background: linear-gradient(135deg, #0f766e, #047857);
+            color: #fff;
+        }
+        #cta h2 { font-size: 2.2rem; font-weight: 800; letter-spacing: -1px; margin-bottom: 1rem; }
+        #cta p { font-size: 1.1rem; opacity: 0.85; max-width: 500px; margin: 0 auto 2rem; }
+        .btn-white {
+            background: #fff; color: #047857; padding: 0.9rem 2.2rem; border-radius: 14px;
+            font-size: 1rem; font-weight: 700; text-decoration: none;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: inline-block;
+        }
+        .btn-white:hover { transform: translateY(-3px); box-shadow: 0 12px 35px rgba(0,0,0,0.15); }
+
+        /* ── FOOTER ── */
+        footer {
+            text-align: center; padding: 2.5rem 1rem; color: #94a3b8;
+            font-size: 0.8rem; border-top: 1px solid #e2e8f0;
+        }
+        footer a { color: #0d9488; text-decoration: none; font-weight: 500; }
+        footer a:hover { text-decoration: underline; }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 768px) {
+            .navbar { padding: 0.7rem 1rem; }
+            .nav-links { gap: 1rem; }
+            .hero { padding: 6rem 1rem 3rem; }
+            .hero-stats { gap: 1.5rem; }
+            section { padding: 3rem 1rem; }
+            .step { flex-direction: column; gap: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ═══════════════ NAVBAR ═══════════════ -->
+<nav class="navbar">
+    <a href="#" class="nav-brand">🌾 Koperasi<span style="color:#0d9488">AI</span></a>
+    <div class="nav-links">
+        <a href="#features" class="nav-link">Fitur</a>
+        <a href="#how" class="nav-link">Cara Kerja</a>
+        <a href="#tech" class="nav-link">Teknologi</a>
+        <a href="#demo" class="nav-link">Demo</a>
+        <a href="https://github.com/RafiraRangga/koperasi-ai" class="nav-cta" target="_blank">⭐ GitHub</a>
+    </div>
+</nav>
+
+<!-- ═══════════════ HERO ═══════════════ -->
+<section class="hero">
+    <div class="hero-badge">🐣 Final Project · LLM-Based Tools & Gemini API</div>
+    <h1>Asisten Cerdas<br>untuk Koperasi Indonesia</h1>
+    <p>
+        Chatbot AI yang memahami koperasi simpan pinjam.
+        Tanya simpanan, simulasi pinjaman, cek SHU — semua lewat chat natural.
+    </p>
+    <div class="hero-actions">
+        <a href="https://rafirarangga-koperasi-ai.streamlit.app/" class="btn-primary" target="_blank">🚀 Coba Sekarang</a>
+        <a href="https://github.com/RafiraRangga/koperasi-ai" class="btn-secondary" target="_blank">📂 Source Code</a>
+    </div>
+    <div class="hero-stats">
+        <div class="hero-stat">
+            <div class="hero-stat-value">24/7</div>
+            <div class="hero-stat-label">Siap Membantu</div>
+        </div>
+        <div class="hero-stat">
+            <div class="hero-stat-value">100%</div>
+            <div class="hero-stat-label">Bahasa Indonesia</div>
+        </div>
+        <div class="hero-stat">
+            <div class="hero-stat-value">Gemini</div>
+            <div class="hero-stat-label">Powered by Google</div>
+        </div>
+        <div class="hero-stat">
+            <div class="hero-stat-value">3 Mode</div>
+            <div class="hero-stat-label">Gaya Bahasa</div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════ FEATURES ═══════════════ -->
+<section id="features">
+    <div class="section-label">Fitur</div>
+    <h2 class="section-title">Semua yang dibutuhkan koperasi</h2>
+    <p class="section-subtitle">Dari simulasi pinjaman sampai edukasi anggota — satu chatbot, semua jawaban.</p>
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon">💰</div>
+            <h3>Simulasi Pinjaman</h3>
+            <p>Hitung angsuran otomatis dengan metode flat rate. Tabel lengkap: pokok, bunga, total, sisa per bulan.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">📋</div>
+            <h3>Produk Koperasi</h3>
+            <p>Informasi lengkap simpanan wajib, sukarela, berjangka, deposito, dan semua jenis pinjaman KSP.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🧠</div>
+            <h3>Memory Percakapan</h3>
+            <p>Ingat konteks chat sebelumnya. Semakin banyak ngobrol, semakin pintar dan personal jawabannya.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🎯</div>
+            <h3>Domain Koperasi</h3>
+            <p>Paham AD/ART, SHU, RAT, UU No. 25/1992, dan regulasi koperasi simpan pinjam Indonesia.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🎨</div>
+            <h3>3 Gaya Bahasa</h3>
+            <p>Santai & Ramah, Formal & Profesional, atau Campuran. Sesuaikan dengan audiens koperasi kamu.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">📤</div>
+            <h3>Export Chat</h3>
+            <p>Download riwayat percakapan sebagai file teks. Berguna untuk dokumentasi dan audit layanan.</p>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════ HOW IT WORKS ═══════════════ -->
+<section id="how">
+    <div class="section-label">Cara Kerja</div>
+    <h2 class="section-title">Simpel, cukup 3 langkah</h2>
+    <p class="section-subtitle">Tidak perlu install apa pun. Buka browser, masukkan API key, langsung tanya.</p>
+    <div class="steps">
+        <div class="step">
+            <div class="step-num">1</div>
+            <div class="step-content">
+                <h4>Dapatkan Gemini API Key</h4>
+                <p>Gratis dari <a href="https://aistudio.google.com/apikey" target="_blank" style="color:#0d9488;font-weight:500;">Google AI Studio</a>. Cukup login dengan akun Google, satu klik langsung dapat.</p>
+            </div>
+        </div>
+        <div class="step">
+            <div class="step-num">2</div>
+            <div class="step-content">
+                <h4>Buka KoperasiAI & Masukkan Key</h4>
+                <p>Buka aplikasi, paste API key di sidebar. Pilih model (Flash/Pro), atur temperature & gaya bahasa.</p>
+            </div>
+        </div>
+        <div class="step">
+            <div class="step-num">3</div>
+            <div class="step-content">
+                <h4>Mulai Bertanya!</h4>
+                <p>Ketik pertanyaan atau klik quick prompt. AI langsung merespon dengan informasi akurat seputar koperasi.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════ TECH STACK ═══════════════ -->
+<section id="tech">
+    <div class="section-label">Teknologi</div>
+    <h2 class="section-title">Dibangun dengan stack modern</h2>
+    <p class="section-subtitle">Open-source, gratis, dan production-ready.</p>
+    <div class="tech-grid">
+        <div class="tech-item">
+            <div class="icon">🐍</div>
+            <div class="name">Python 3.10+</div>
+            <div class="role">Bahasa Pemrograman</div>
+        </div>
+        <div class="tech-item">
+            <div class="icon">🎈</div>
+            <div class="name">Streamlit</div>
+            <div class="role">Web UI Framework</div>
+        </div>
+        <div class="tech-item">
+            <div class="icon">🧠</div>
+            <div class="name">Gemini API</div>
+            <div class="role">LLM Engine</div>
+        </div>
+        <div class="tech-item">
+            <div class="icon">🎨</div>
+            <div class="name">Custom CSS</div>
+            <div class="role">Professional UI</div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════ DEMO ═══════════════ -->
+<section id="demo">
+    <div class="section-label">Demo</div>
+    <h2 class="section-title">Lihat cara kerjanya</h2>
+    <p class="section-subtitle">Contoh percakapan simulasi pinjaman dengan KoperasiAI.</p>
+    <div class="demo-card">
+        <div class="demo-header">
+            <div class="demo-dot red"></div>
+            <div class="demo-dot yellow"></div>
+            <div class="demo-dot green"></div>
+            <span style="margin-left:0.5rem;font-size:0.8rem;color:#94a3b8;">KoperasiAI Chat</span>
+        </div>
+        <div class="demo-body">
+            <pre><span class="prompt">👤 User:</span> Simulasi pinjaman Rp 5 juta selama 12 bulan dong
+
+<span class="response">🌾 KoperasiAI:</span> Tentu Kak! Berikut simulasi pinjaman Rp5.000.000
+dengan bunga 2% flat per bulan selama 12 bulan:
+
+📊 <strong>Ringkasan</strong>
+• Plafon: Rp5.000.000
+• Tenor: 12 bulan
+• Bunga: 2%/bulan (flat)
+• Angsuran/bulan: Rp516.667
+• Total pembayaran: Rp6.200.000
+
+📋 <strong>Tabel Angsuran</strong>
+Bulan | Pokok      | Bunga     | Total     | Sisa
+──────┼────────────┼───────────┼───────────┼──────────
+1     | Rp416.667  | Rp100.000 | Rp516.667 | Rp4.583.333
+2     | Rp416.667  | Rp100.000 | Rp516.667 | Rp4.166.667
+...
+12    | Rp416.667  | Rp100.000 | Rp516.667 | Rp0
+
+Ada yang bisa saya bantu lagi Kak? 😊</pre>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════ CTA ═══════════════ -->
+<section id="cta">
+    <h2>Siap bantu koperasi kamu?</h2>
+    <p>Coba KoperasiAI sekarang — gratis, tanpa install, langsung dari browser.</p>
+    <a href="https://rafirarangga-koperasi-ai.streamlit.app/" class="btn-white" target="_blank">🌾 Coba KoperasiAI →</a>
+</section>
+
+<!-- ═══════════════ FOOTER ═══════════════ -->
+<footer>
+    <strong>KoperasiAI</strong> · Final Project LLM-Based Tools & Gemini API<br>
+    <a href="https://github.com/RafiraRangga/koperasi-ai" target="_blank">GitHub</a> ·
+    <a href="https://rafirarangga-koperasi-ai.streamlit.app/" target="_blank">Live App</a><br><br>
+    Membangun infrastruktur digital gotong royong untuk koperasi Indonesia 🇮🇩
+</footer>
+
+</body>
+</html>
