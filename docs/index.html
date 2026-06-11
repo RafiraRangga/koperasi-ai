@@ -610,10 +610,11 @@ Ada yang bisa saya bantu lagi Kak? 😊</pre>
         <button class="chat-close" onclick="toggleChat()">✕</button>
     </div>
 
-    <div class="api-key-banner" id="apiKeyBanner">
-        🔑 <input type="password" id="apiKeyInput" placeholder="Gemini API Key (AIza...)" onchange="saveApiKey()">
-        <button onclick="saveApiKey()">Simpan</button>
-        <a href="https://aistudio.google.com/apikey" target="_blank">Dapatkan gratis →</a>
+    <div class="api-key-banner" id="apiKeyBanner" style="background:#f0fdfa;border-bottom:1px solid #99f6e4;padding:0.5rem 1rem;font-size:0.78rem;display:flex;align-items:center;gap:0.5rem;">
+        🧠 <select id="modelSelect" style="border:1px solid #5eead4;border-radius:8px;padding:0.3rem 0.6rem;font-size:0.78rem;background:#fff;font-family:Inter,sans-serif;cursor:pointer;outline:none;">
+            <option value="gemini">🌐 Gemini 2.5 Flash</option>
+            <option value="grok">⚡️ Grok 2</option>
+        </select>
     </div>
 
     <div class="chat-messages" id="chatMessages">
@@ -650,6 +651,11 @@ Ada yang bisa saya bantu lagi Kak? 😊</pre>
 </div>
 
 <script>
+const API_KEYS = {
+    gemini: 'AQ.Ab8RN6JMZ2fXeeLbsttajpgsRT8xlOljomQmIR-36-DRgDNl3w',
+    grok: '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'
+};
+
 const SYSTEM_PROMPT = `Kamu adalah KoperasiAI, asisten AI untuk koperasi simpan pinjam (KSP) di Indonesia.
 
 ### Domain Pengetahuan
@@ -665,6 +671,7 @@ const SYSTEM_PROMPT = `Kamu adalah KoperasiAI, asisten AI untuk koperasi simpan 
 - Prinsip: keanggotaan sukarela, pengelolaan demokratis, SHU adil
 
 ### Gaya Bahasa
+
 Gunakan bahasa Indonesia santai, ramah, personal. Panggil user 'Kak' atau 'Sahabat Koperasi'. Boleh emoticon. Nada hangat seperti teman membantu.
 
 ### Aturan
@@ -677,16 +684,8 @@ Gunakan bahasa Indonesia santai, ramah, personal. Panggil user 'Kak' atau 'Sahab
 let chatHistory = [];
 let chatOpen = false;
 
-function getApiKey() {
-    return localStorage.getItem('gemini_api_key_kopai') || '';
-}
-
-function saveApiKey() {
-    const key = document.getElementById('apiKeyInput').value.trim();
-    if (key) {
-        localStorage.setItem('gemini_api_key_kopai', key);
-        document.getElementById('apiKeyBanner').style.display = 'none';
-    }
+function getModel() {
+    return document.getElementById('modelSelect')?.value || 'gemini';
 }
 
 function toggleChat() {
@@ -696,8 +695,6 @@ function toggleChat() {
     if (chatOpen) {
         win.classList.add('open');
         btn.classList.add('active');
-        document.getElementById('apiKeyInput').value = getApiKey();
-        document.getElementById('apiKeyBanner').style.display = getApiKey() ? 'none' : '';
         document.getElementById('chatInput').focus();
     } else {
         win.classList.remove('open');
@@ -811,8 +808,6 @@ async function sendChat() {
 }
 
 // Init
-document.getElementById('apiKeyInput').value = getApiKey();
-if (getApiKey()) document.getElementById('apiKeyBanner').style.display = 'none';
 
 // Auto-resize textarea
 document.getElementById('chatInput').addEventListener('input', function() {
