@@ -72,6 +72,13 @@
 
 ---
 
+## 🌐 Live Demo
+
+| Platform | URL |
+|---|---|
+| 🌍 **Landing Page** | **[rafirarangga.github.io/koperasi-ai](https://rafirarangga.github.io/koperasi-ai/)** |
+| 🤖 **Live App** | **[rafirarangga-koperasi-ai.streamlit.app](https://rafirarangga-koperasi-ai.streamlit.app/)** *(deploy dulu)* |
+
 ## 🚀 Quick Start
 
 ### Prerequisites
