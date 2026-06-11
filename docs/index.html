@@ -583,8 +583,8 @@ Ada yang bisa saya bantu lagi Kak? 😊</pre>
 <!-- ═══════════════ CTA ═══════════════ -->
 <section id="cta">
     <h2>Siap bantu koperasi kamu?</h2>
-    <p>Coba KoperasiAI sekarang — klik chat di pojok kanan bawah, langsung tanya apa saja.</p>
-    <a href="#" class="btn-white" onclick="document.getElementById('chatbotLauncher').click();return false">💬 Mulai Chat Sekarang →</a>
+    <p>Chatbot sudah aktif di kanan bawah. Ketik pertanyaanmu sekarang!</p>
+    <a href="#" class="btn-white" onclick="document.getElementById('chatInput').focus();return false">💬 Langsung Tanya →</a>
 </section>
 
 <!-- ═══════════════ FOOTER ═══════════════ -->
@@ -807,7 +807,10 @@ async function sendChat() {
     input.focus();
 }
 
-// Init
+// Init — auto open chat
+chatOpen = true;
+document.getElementById('chatWindow').classList.add('open');
+document.getElementById('chatbotLauncher').classList.add('active');
 
 // Auto-resize textarea
 document.getElementById('chatInput').addEventListener('input', function() {
