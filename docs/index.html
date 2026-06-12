@@ -613,7 +613,7 @@ Ada yang bisa saya bantu lagi Kak? 😊</pre>
     <div class="api-key-banner" id="apiKeyBanner" style="background:#f0fdfa;border-bottom:1px solid #99f6e4;padding:0.5rem 1rem;font-size:0.78rem;display:flex;align-items:center;gap:0.5rem;">
         🧠 <select id="modelSelect" style="border:1px solid #5eead4;border-radius:8px;padding:0.3rem 0.6rem;font-size:0.78rem;background:#fff;font-family:Inter,sans-serif;cursor:pointer;outline:none;">
             <option value="gemini">🌐 Gemini 2.5 Flash</option>
-            <option value="grok">⚡️ Grok 2</option>
+            <option value="grok">⚡️ Grok 4.3</option>
         </select>
     </div>
 
@@ -652,8 +652,8 @@ Ada yang bisa saya bantu lagi Kak? 😊</pre>
 
 <script>
 const API_KEYS = {
-    gemini: 'AIzaSyCfj9dyZkDclKgYyQTDV5_B4muWza8INpU',
-    grok: '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'
+    gemini: 'AQ.Ab8RN6KOa8y10FWS_uAZrWVT5vTbWRPTamhcP85NYD1ZihkMpA',
+    grok: 'xai-zjHOboSAT4wRfK0YXfwmHKPpyVE9d0xznsD16NdArCRMtJvilOkd8HVNJJti45nUftno2pvDFU1h6t13'
 };
 
 const SYSTEM_PROMPT = `Kamu adalah KoperasiAI, asisten AI untuk koperasi simpan pinjam (KSP) di Indonesia.
@@ -792,7 +792,7 @@ async function sendChat() {
 
 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-                body: JSON.stringify({ model: 'grok-2', messages, temperature: 0.7, max_tokens: 2048 })
+                body: JSON.stringify({ model: 'grok-4.3', messages, temperature: 0.7, max_tokens: 2048 })
             });
             const data = await resp.json();
             reply = data.choices?.[0]?.message?.content || '❌ Error: ' + (data.error?.message || JSON.stringify(data));
